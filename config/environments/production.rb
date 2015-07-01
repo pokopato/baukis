@@ -20,7 +20,7 @@ Rails.application.configure do
   # config.action_dispatch.rack_cache = true
 
   # Disable Rails's static asset server (Apache or nginx will already do this).
-  config.serve_static_assets = false
+  config.serve_static_assets = true
 
   # Compress JavaScripts and CSS.
   config.assets.js_compressor = :uglifier
@@ -80,4 +80,10 @@ Rails.application.configure do
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
+
+  config.baukis = {
+    staff: { host: 'baukis.example.com', path: '' },
+    admin: { host: 'baukis.example.com', path: 'admin'  },
+    customer: { host: 'example.com', path: 'mypage' }
+  }
 end
