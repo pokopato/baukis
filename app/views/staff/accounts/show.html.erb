@@ -5,7 +5,7 @@
   <div class="links">
     <%= link_to 'アカウント情報の編集', :edit_staff_account %>
   </div>
-  
+
   <table class="attributes">
     <tr>
       <th>氏名</th>
@@ -26,6 +26,10 @@
       <td class="email">
         <%= @staff_member.email %>
       </td>
+    </tr>
+    <tr>
+      <th>パスワード</th>
+      <td class="password">************</td>
     </tr>
     <tr>
       <th>開始日</th>

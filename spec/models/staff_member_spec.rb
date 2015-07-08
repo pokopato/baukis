@@ -15,4 +15,74 @@ describe StaffMember do
       expect(member.hashed_password).to be_nil
     end
   end
+
+  describe '値の正規化' do
+    example 'email前後の空白を除去' do
+      member = create(:staff_member, email: ' test@example.com ')
+      expect(member.email).to eq('test@example.com')
+    end
+
+    example 'emailに含まれる全角英数字記号を半角に変換' do
+      member = create(:staff_member, email: 'ｔｅｓｔ＠ｅｘａｍｐｌｅ．ｃｏｍ')
+      expect(member.email).to eq('test@example.com')
+    end
+
+    example 'email前後の全角スペースの除去' do
+      member = create(:staff_member, email: "\u{3000}test@example.com\u{3000}")
+      expect(member.email).to eq('test@example.com')
+    end
+
+    example 'family_name_kanaに含まれるひらがなをカタカナに変換' do
+      member = create(:staff_member, family_name_kana: 'てすと')
+      expect(member.family_name_kana).to eq('テスト')
+    end
+
+    example 'family_name_kanaに含まれる半角カナを全角カナに変換' do
+      member = create(:staff_member, family_name_kana: 'ﾃｽﾄ')
+      expect(member.family_name_kana).to eq('テスト')
+    end
+  end
+
+  describe 'バリデーション' do
+    example '@を２個含むemailは無効' do
+      member = build(:staff_member, email: 'test@@example.com')
+      expect(member).not_to be_valid
+    end
+
+    example '漢字を含むfamily_name_kanaは無効' do
+      member = build(:staff_member, family_name_kana: '試験')
+      expect(member).not_to be_valid
+    end
+
+    example '長音符を含むfamily_name_kanaは有効' do
+      member = build(:staff_member, family_name_kana: 'エリー')
+      expect(member).to be_valid
+    end
+
+    example '他の職員のメールアドレスと重複したemailは無効' do
+      member1 = create(:staff_member)
+      member2 = build(:staff_member, email: member1.email)
+      expect(member2).not_to be_valid
+    end
+
+    example 'family_nameに漢字、大丈夫です' do
+      member = build(:staff_member, family_name: '久保田')
+      expect(member).to be_valid
+    end
+
+    example 'family_nameに記号、無理です' do
+      member = build(:staff_member, family_name: '@w@')
+      expect(member).not_to be_valid
+    end
+
+    example 'family_nameにひらがなカタカナ、大丈夫です' do
+      member = build(:staff_member, family_name: 'くぼたハルト')
+      expect(member).to be_valid
+    end
+
+    example 'family_nameにアルファベット、大丈夫です' do
+      member = build(:staff_member, family_name: 'Kubota')
+      expect(member).to be_valid
+    end
+  end
 end
